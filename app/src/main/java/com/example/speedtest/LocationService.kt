@@ -77,7 +77,7 @@ class LocationService: Service() {
                 if (previousLocation != null) {
                     val speed = calculateSpeed(previousLocation!!, location)
                     // Оновлюємо сповіщення з швидкістю
-                    updatedNotification.setContentText("Location: $lat, $long, Speed: $speed m/s")
+                    updatedNotification.setContentText("Location: $lat, $long, Speed: $speed km/h")
                 }
 
                 notificationManager.notify(1, updatedNotification.build())
