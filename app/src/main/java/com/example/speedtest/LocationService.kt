@@ -45,16 +45,6 @@ class LocationService: Service() {
         return super.onStartCommand(intent, flags, startId)
     }
 
-    private fun calculateSpeed(prevLocation: Location, newLocation: Location): Float {
-        val distance = prevLocation.distanceTo(newLocation)
-        val timeDiff = (newLocation.time - prevLocation.time) / 1000 // переведення мілісекунд у секунди
-        val speedMeterPerSec = if (timeDiff > 0) distance / timeDiff else 0f
-        return speedMeterPerSec * 3.6f // переведення м/с у км/год
-    }
-
-
-    private var previousLocation: Location? = null
-
     private fun start() {
         val notification = NotificationCompat.Builder(this, "location")
             .setContentTitle("Tracking location...")
@@ -65,23 +55,17 @@ class LocationService: Service() {
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         locationClient
-            .getLocationUpdates(1000L)
+            .getLocationUpdates(100L)
             .catch { e -> e.printStackTrace() }
             .onEach { location ->
                 val lat = location.latitude.toString()
                 val long = location.longitude.toString()
+                val spe = location.speed.toString()
                 val updatedNotification = notification.setContentText(
-                    "Location: $lat, $long"
+                    "Location: $lat, $long Speed: ${spe.substring(0, 3)} km/h"
                 )
 
-                if (previousLocation != null) {
-                    val speed = calculateSpeed(previousLocation!!, location)
-                    // Оновлюємо сповіщення з швидкістю
-                    updatedNotification.setContentText("Location: $lat, $long, Speed: $speed km/h")
-                }
-
                 notificationManager.notify(1, updatedNotification.build())
-                previousLocation = location
             }
             .launchIn(serviceScope)
 

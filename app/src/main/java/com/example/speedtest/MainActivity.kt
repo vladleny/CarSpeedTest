@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
                             startService(this)
                         }
                     }) {
-                        Text(text = "Start")
+                        Text(text = "Start ")
                     }
                     Button(onClick = {
                         Intent(applicationContext, LocationService::class.java).apply{
