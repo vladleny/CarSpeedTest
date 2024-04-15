@@ -45,7 +45,7 @@ class LocationService: Service() {
         return super.onStartCommand(intent, flags, startId)
     }
 
-    private fun start() {
+     private fun start() : String {
         val notification = NotificationCompat.Builder(this, "location")
             .setContentTitle("Tracking location...")
             .setContentText("Location: null")
@@ -53,16 +53,16 @@ class LocationService: Service() {
             .setOngoing(true)
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
+        var speed = ""
         locationClient
             .getLocationUpdates(100L)
             .catch { e -> e.printStackTrace() }
             .onEach { location ->
                 val lat = location.latitude.toString()
                 val long = location.longitude.toString()
-                val spe = location.speed.toString()
+                speed = location.speed.toString()
                 val updatedNotification = notification.setContentText(
-                    "Location: $lat, $long Speed: ${spe.substring(0, 3)} km/h"
+                    "Location: $lat, $long Speed: ${speed.substring(0, 3)} km/h"
                 )
 
                 notificationManager.notify(1, updatedNotification.build())
@@ -70,6 +70,7 @@ class LocationService: Service() {
             .launchIn(serviceScope)
 
         startForeground(1, notification.build())
+        return speed
     }
 
 
